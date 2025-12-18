@@ -1,48 +1,85 @@
 ﻿"""
 SkillBridge AI - Main Application
 """
-import time
-from PIL import Image
-from jobs.job_search import render_job_search
-from datetime import datetime
-from ui_components import (
-    apply_modern_styles, hero_section, feature_card, about_section,
-    page_header, render_analytics_section, render_activity_section,
-    render_suggestions_section
-)
-from feedback.feedback import FeedbackManager
-from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.shared import Inches, Pt
-from docx import Document
-import io
-import base64
-import plotly.graph_objects as go
-from streamlit_lottie import st_lottie
-import requests
-from dashboard.dashboard import DashboardManager
-from config.courses import COURSES_BY_CATEGORY, RESUME_VIDEOS, INTERVIEW_VIDEOS, get_courses_for_role, get_category_for_role
-from config.job_roles import JOB_ROLES
-from config.database import (
-    get_database_connection, save_resume_data, save_analysis_data,
-    init_database, verify_admin, log_admin_action, save_ai_analysis_data,
-    get_ai_analysis_stats, reset_ai_analysis_stats, get_detailed_ai_analysis_stats
-)
-from utils.ai_resume_analyzer import AIResumeAnalyzer
-from utils.resume_builder import ResumeBuilder
-from utils.resume_analyzer import ResumeAnalyzer
-import traceback
-import plotly.express as px
-import pandas as pd
-import json
-import streamlit as st
-import datetime
 
-# Set page config at the very beginning
+# ----------------------------
+# STANDARD & THIRD-PARTY IMPORTS
+# ----------------------------
+import time
+import io
+import os
+import json
+import base64
+import traceback
+import datetime
+import requests
+import pandas as pd
+
+from PIL import Image
+from docx import Document
+from docx.shared import Inches, Pt
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+
+import plotly.express as px
+import plotly.graph_objects as go
+
+import streamlit as st
+from streamlit_lottie import st_lottie
+
+# ----------------------------
+# STREAMLIT PAGE CONFIG (MUST BE HERE)
+# ----------------------------
 st.set_page_config(
     page_title="SkillBridge AI",
     page_icon="🚀",
     layout="wide"
 )
+
+# ----------------------------
+# PROJECT IMPORTS
+# ----------------------------
+from jobs.job_search import render_job_search
+
+from ui_components import (
+    apply_modern_styles,
+    hero_section,
+    feature_card,
+    about_section,
+    page_header,
+    render_analytics_section,
+    render_activity_section,
+    render_suggestions_section
+)
+
+from feedback.feedback import FeedbackManager
+from dashboard.dashboard import DashboardManager
+
+from config.job_roles import JOB_ROLES
+from config.courses import (
+    COURSES_BY_CATEGORY,
+    RESUME_VIDEOS,
+    INTERVIEW_VIDEOS,
+    get_courses_for_role,
+    get_category_for_role
+)
+
+from config.database import (
+    get_database_connection,
+    save_resume_data,
+    save_analysis_data,
+    init_database,
+    verify_admin,
+    log_admin_action,
+    save_ai_analysis_data,
+    get_ai_analysis_stats,
+    reset_ai_analysis_stats,
+    get_detailed_ai_analysis_stats
+)
+
+from utils.resume_analyzer import ResumeAnalyzer
+from utils.ai_resume_analyzer import AIResumeAnalyzer
+from utils.resume_builder import ResumeBuilder
+
 
 
 class ResumeApp:
