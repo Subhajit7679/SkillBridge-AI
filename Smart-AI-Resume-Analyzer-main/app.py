@@ -106,8 +106,18 @@ class ResumeApp:
         init_database()
 
         # Load external CSS
-        with open('style/style.css') as f:
-            st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+        import os
+        import streamlit as st
+
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+        CSS_PATH = os.path.join(BASE_DIR, "style", "style.css")
+
+        if os.path.exists(CSS_PATH):
+            with open(CSS_PATH, "r", encoding="utf-8") as f:
+                st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+        else:
+            st.error("CSS file not found")
+
 
         # Load Google Fonts
         st.markdown("""
