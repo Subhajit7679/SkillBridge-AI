@@ -84,6 +84,7 @@ from utils.resume_builder import ResumeBuilder
 
 class ResumeApp:
     def __init__(self):
+        global st
         """Initialize the application safely for Streamlit reruns"""
 
         # -----------------------------
