@@ -86,6 +86,9 @@ class ResumeApp:
     def __init__(self):
         """Initialize the application safely for Streamlit reruns"""
 
+        # -----------------------------
+        # SESSION STATE (SAFE)
+        # -----------------------------
         if "form_data" not in st.session_state:
             st.session_state.form_data = {
                 "personal_info": {
@@ -108,10 +111,14 @@ class ResumeApp:
                 }
             }
 
+        # Stable reference (IMPORTANT)
         self.form_data = st.session_state.form_data
 
+        # -----------------------------
+        # GLOBAL APP STATE
+        # -----------------------------
         if "page" not in st.session_state:
-            st.session_state.page = "home"
+            st.session_state.page = "🏠 HOME"
 
         if "is_admin" not in st.session_state:
             st.session_state.is_admin = False
@@ -122,18 +129,18 @@ class ResumeApp:
         if "selected_role" not in st.session_state:
             st.session_state.selected_role = None
 
-        from config.job_roles import JOB_ROLES
-        from utils.resume_analyzer import ResumeAnalyzer
-        from utils.ai_resume_analyzer import AIResumeAnalyzer
-        from utils.resume_builder import ResumeBuilder
-        from dashboard.dashboard import DashboardManager
-
+        # -----------------------------
+        # CORE OBJECTS (NO RERUN CRASH)
+        # -----------------------------
         self.job_roles = JOB_ROLES
         self.analyzer = ResumeAnalyzer()
         self.ai_analyzer = AIResumeAnalyzer()
         self.builder = ResumeBuilder()
         self.dashboard_manager = DashboardManager()
 
+        # -----------------------------
+        # PAGE ROUTES (MUST MATCH SIDEBAR)
+        # -----------------------------
         self.pages = {
             "🏠 HOME": self.render_home,
             "🔍 RESUME ANALYZER": self.render_analyzer,
@@ -144,7 +151,9 @@ class ResumeApp:
             "ℹ️ ABOUT": self.render_about
         }
 
-        from config.database import init_database
+        # -----------------------------
+        # DATABASE INIT (SAFE TO REPEAT)
+        # -----------------------------
         init_database()
 
 
