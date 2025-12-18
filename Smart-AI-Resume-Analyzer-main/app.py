@@ -47,28 +47,120 @@ st.set_page_config(
 
 class ResumeApp:
     def __init__(self):
-        """Initialize the application"""
-        if 'form_data' not in st.session_state:
+        """Initialize the application safely for Streamlit reruns"""
+
+        # -----------------------------
+        # SESSION STATE INITIALIZATION
+        # -----------------------------
+        if "form_data" not in st.session_state:
             st.session_state.form_data = {
-                'personal_info': {
-                    'full_name': '',
-                    'email': '',
-                    'phone': '',
-                    'location': '',
-                    'linkedin': '',
-                    'portfolio': ''
+                "personal_info": {
+                    "full_name": "",
+                    "email": "",
+                    "phone": "",
+                    "location": "",
+                    "linkedin": "",
+                    "portfolio": ""
                 },
-                'summary': '',
-                'experiences': [],
-                'education': [],
-                'projects': [],
-                'skills_categories': {
-                    'technical': [],
-                    'soft': [],
-                    'languages': [],
-                    'tools': []
+                "summary": "",
+                "experiences": [],
+                "education": [],
+                "projects": [],
+                "skills_categories": {
+                    "technical": [],
+                    "soft": [],
+                    "languages": [],
+                    "tools": []
                 }
             }
+
+        # Stable reference (CRITICAL)
+        self.form_data = st.session_state.form_data
+
+        # -----------------------------
+        # PAGE & AUTH STATE
+        # -----------------------------
+        if "page" not in st.session_state:
+            st.session_state.page = "home"
+
+        if "is_admin" not in st.session_state:
+            st.session_state.is_admin = False
+
+        if "user_id" not in st.session_state:
+            st.session_state.user_id = "default_user"
+
+        if "selected_role" not in st.session_state:
+            st.session_state.selected_role = None
+
+        # -----------------------------
+        # REQUIRED IMPORTS (EXPLICIT)
+        # -----------------------------
+        from config.job_roles import JOB_ROLES
+        from utils.resume_analyzer import ResumeAnalyzer
+        from utils.ai_resume_analyzer import AIResumeAnalyzer
+        from utils.resume_builder import ResumeBuilder
+        from dashboard.dashboard import DashboardManager
+
+        # -----------------------------
+        # CLASS ATTRIBUTES (THIS FIXES THE CRASH)
+        # -----------------------------
+        self.job_roles = JOB_ROLES
+        self.analyzer = ResumeAnalyzer()
+        self.ai_analyzer = AIResumeAnalyzer()
+        self.builder = ResumeBuilder()
+        self.dashboard_manager = DashboardManager()
+
+        # -----------------------------
+        # PAGE ROUTING (MUST EXIST EARLY)
+        # -----------------------------
+        self.pages = {
+            "🏠 HOME": self.render_home,
+            "🔍 RESUME ANALYZER": self.render_analyzer,
+            "📝 RESUME BUILDER": self.render_builder,
+            "📊 DASHBOARD": self.render_dashboard,
+            "🎯 JOB SEARCH": self.render_job_search,
+            "💬 FEEDBACK": self.render_feedback_page,
+            "ℹ️ ABOUT": self.render_about
+        }
+
+        # -----------------------------
+        # DATABASE INIT (SAFE)
+        # -----------------------------
+        from config.database import init_database
+        init_database()
+
+        # -----------------------------
+        # LOAD CSS SAFELY (STREAMLIT CLOUD)
+        # -----------------------------
+        import os
+
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+        CSS_PATH = os.path.join(BASE_DIR, "style", "style.css")
+
+        if os.path.exists(CSS_PATH):
+            with open(CSS_PATH, "r", encoding="utf-8") as f:
+                st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+        else:
+            st.warning("CSS file not found: style/style.css")
+
+        # -----------------------------
+        # GOOGLE FONTS
+        # -----------------------------
+        st.markdown("""
+            <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        """, unsafe_allow_html=True)
+
+        # -----------------------------
+        # AI ANALYTICS STATE
+        # -----------------------------
+        if "ai_analysis_stats" not in st.session_state:
+            st.session_state.ai_analysis_stats = {
+                "score_distribution": {},
+                "total_analyses": 0,
+                "average_score": 0
+            }
+
 
         # Initialize navigation state
         if 'page' not in st.session_state:
