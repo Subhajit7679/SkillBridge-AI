@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 import sqlite3
 from datetime import datetime
@@ -6,7 +7,9 @@ import time
 
 class FeedbackManager:
     def __init__(self):
-        self.db_path = "feedback/feedback.db"
+        os.makedirs("/tmp/feedback", exist_ok=True)
+        self.db_path = "/tmp/feedback/feedback.db"
+
         self.setup_database()
 
     def setup_database(self):
